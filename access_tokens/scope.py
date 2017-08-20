@@ -8,8 +8,13 @@ model instance, model, app or globally.
 Scopes can be appended to each other using the plus operator, allowing
 multiple scopes to be combined.
 """
+import six
+from itertools import chain
 
-from itertools import chain, izip_longest
+if six.PY2:
+    from itertools import izip_longest as zip_longest
+else:
+    from itertools import zip_longest
 
 from django.conf import settings
 
@@ -92,7 +97,7 @@ def _is_sub_scope(scope, parent_scope):
     Returns True if the given scope is a subset of the permissions
     defined in the parent scope.
     """
-    return not any (
+    return not any(
         frozenset(permissions_grant).difference(chain.from_iterable(
             parent_permissions_grant
             for parent_model_grant, parent_permissions_grant
@@ -100,7 +105,7 @@ def _is_sub_scope(scope, parent_scope):
             if all(
                 parent_model_grant_part == model_grant_part
                 for model_grant_part, parent_model_grant_part
-                in izip_longest(
+                in zip_longest(
                     model_grant,
                     parent_model_grant,
                 )
@@ -117,7 +122,6 @@ def _is_sub_scope(scope, parent_scope):
 
 
 class ScopeSerializer(object):
-
     """
     Serializes a scope into a compact representation.
 
@@ -155,7 +159,7 @@ class ScopeSerializer(object):
         return [
             (
                 self.serialize_model_grant(model_grant),
-                map(self.serialize_permission_grant, permissions_grant),
+                list(map(self.serialize_permission_grant, permissions_grant)),
             )
             for model_grant, permissions_grant
             in scope
@@ -182,7 +186,7 @@ class ScopeSerializer(object):
         return [
             (
                 self.deserialize_model_grant(serialized_model_grant),
-                map(self.deserialize_permission_grant, serialized_permissions_grant),
+                list(map(self.deserialize_permission_grant, serialized_permissions_grant)),
             )
             for serialized_model_grant, serialized_permissions_grant
             in serialized_scope
@@ -190,7 +194,6 @@ class ScopeSerializer(object):
 
 
 class ContentTypeScopeSerializerMixin(object):
-
     """
     A mixin for a ScopeSerializer that provides a more compact
     representation of model grants by using the ContentTypes framework.
@@ -221,14 +224,13 @@ class ContentTypeScopeSerializerMixin(object):
         if serialized_model_grant and isinstance(serialized_model_grant[0], int):
             model = self._content_type_model.objects.get_for_id(serialized_model_grant[0]).model_class()
             return [
-                model._meta.app_label,
-                get_model_name(model._meta),
-            ] + serialized_model_grant[1:]
+                       model._meta.app_label,
+                       get_model_name(model._meta),
+                   ] + serialized_model_grant[1:]
         return serialized_model_grant
 
 
 class AuthPermissionScopeSerializerMixin(object):
-
     def __init__(self):
         """
         Initializes the AuthPermissionScopeSerializerMixin.
@@ -249,8 +251,8 @@ class AuthPermissionScopeSerializerMixin(object):
         else:
             try:
                 permission = self._permission_model.objects.get(
-                    content_type__app_label = app_label,
-                    codename = codename,
+                    content_type__app_label=app_label,
+                    codename=codename,
                 )
             except (self._permission_model.DoesNotExist, self._permission_model.MultipleObjectsReturned):
                 pass
@@ -286,7 +288,6 @@ DefaultScopeSerializer = type(
     ),
     {},
 )
-
 
 # Instantiate a shared default scope serializer.
 

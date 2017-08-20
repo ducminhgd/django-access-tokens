@@ -3,6 +3,8 @@ django-access-tokens
 
 **django-access-tokens** is a Django app for generating secure scoped access tokens.
 
+This project is forked from [https://github.com/mohawkhq/django-access-tokens](https://github.com/mohawkhq/django-access-tokens) and developed by suggestion from [Dave Hall](https://github.com/etianen)'s [merge request](https://github.com/ducminhgd/django-access-tokens-py3/commit/b98bfaa97eb7bbd3e1ea187d292a603cf5edb390) for Python 3 support
+
 
 Features
 --------

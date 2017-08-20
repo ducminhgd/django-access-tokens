@@ -12,5 +12,4 @@ Contributors
 - Dave Hall <http://blog.etianen.com/>
 """
 
-
 __version__ = (0, 9, 2)
