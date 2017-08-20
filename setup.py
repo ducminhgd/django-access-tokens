@@ -7,13 +7,13 @@ version_str = ".".join(str(n) for n in __version__)
 
 
 setup(
-    name = "django-access-tokens",
+    name = "django-access-tokens-py3",
     version = version_str,
     license = "BSD",
     description = "A Django app for for generating secure scoped access tokens.",
     author = "Dave Hall",
     author_email = "dave@etianen.com",
-    url = "http://github.com/mohawkhq/django-access-tokens",
+    url = "https://github.com/ducminhgd/django-access-tokens-py3",
     packages = [
         "access_tokens",
     ],
